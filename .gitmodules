@@ -1,0 +1,3 @@
+[submodule "portfolio-management"]
+	path = portfolio-management
+	url = git@github.com:sigmance/portfolio-management.git
