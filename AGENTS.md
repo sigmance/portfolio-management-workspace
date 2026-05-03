@@ -597,3 +597,38 @@ Use this shorthand when thinking about the project:
 And at the system level:
 
 **Deep Research provides evidence. Market Matrix provides live state. Multiverse provides futures. Investment Valuation prices the outcomes. Portfolio Management constructs the portfolio. UATS executes and adapts. Razor builds and improves the engine.**
+
+
+---
+
+## VERIFY YOUR OUTPUTS (HARD RULE — MANDATORY)
+
+Before claiming any work as done — system designs, processes, workflows, code, configs, prompts, content — you MUST verify it with at least one applicable mechanism. Untested output is unfinished work. The bar is not "looks right" or "compiles"; it is "demonstrably correct in the way that matters for this artifact".
+
+### Verification ladder — pick the strongest method that applies
+
+| Output type | Primary verification | Secondary / supplemental |
+|---|---|---|
+| **Code (logic, transforms, pipelines)** | Unit tests (TDD when possible — tests first, implementation second) | Integration tests, regression tests pinning the bug-of-the-day |
+| **UI / frontend changes** | Playwright (real browser, real cluster, golden path + edge cases) | Manual smoke + screenshot review |
+| **Quantitative claims (formulas, ratios, statistics, finance math)** | Wolfram Alpha verification (`compose.verify_with_wolfram` Step / SymbolicAI engine) | Hand-computation cross-check |
+| **Formal logical / strategic claims, game-theoretic equilibria** | Lean4 theorem prover (`compose.prove_in_lean4` Step) | Pen-and-paper proof sketch |
+| **Theorem-type proofs / axiomatic claims / mathematical structure proofs** | AxiomMath (`compose.prove_in_axiom` Step / `axle` SDK) | Lean4 fallback |
+| **System design / architecture / spec documents** | Walk the loop end-to-end on a concrete example; show the design holds for the real case | Independent review by another agent / operator |
+| **Data pipelines / ETL / model training** | Run on a small sample, inspect outputs by hand | Compare against a known-good baseline; check schemas / shapes |
+| **Deployments / infra changes** | Rollout status check, post-deploy health probe, bounce-test the dependent pods | Canary on a non-prod surface first when possible |
+| **Configuration changes** | Apply, then exercise the affected feature end-to-end | Diff the live config vs source, confirm match |
+| **Documentation / runbooks / process changes** | Execute the doc step-by-step on a fresh terminal — does it actually work? | Have a teammate / agent run it cold |
+
+### Hard rules
+
+1. **No "looks good" without proof.** If it's code, write or run a test. If it's a UI change, open Playwright on it. If it's a quantitative claim, run it through Wolfram. If it's a system design, walk it through end-to-end on a concrete example.
+2. **Prefer TDD for new code.** Write the failing test first; then implement until it passes. This protects against scope creep and forces you to articulate the contract.
+3. **Pin every bug fix with a regression test.** When you fix a bug, write a test that fails on the broken version and passes on the fixed version. Otherwise the bug WILL come back.
+4. **Use the strongest verifier that fits.** Closed-form math → Wolfram, not eyeballing. Logical / strategic claim → Lean4, not natural-language argument. Theorem-type proof → AxiomMath. Don't substitute a weaker tool when a stronger one applies.
+5. **Ship-blocking failures stay ship-blocking.** If verification fails, do NOT bypass the check (no `--no-verify`, no skipping, no "I'll fix it later"). Diagnose, fix, re-verify. Only ship green.
+6. **State what you verified and how.** End-of-task summaries should include a one-line `Verified: <method> — <result>` so the operator can audit. Silent claims of "done" without verification narrative will be challenged.
+
+### When verification feels expensive
+
+It almost always pays for itself within the same session. The cost of one false-success claim — operator-reported regression, post-merge fire, lost trust, downstream rework — is far higher than the cost of running a 3-line test or a 10-second Playwright check. Lean into the cheapest applicable verifier; build verification into the workflow, not as an after-thought.
